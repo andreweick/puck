@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: immich-server
+  namespace: dmz
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: immich-server } }
+  template:
+    metadata: { labels: { app: immich-server } }
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/arch
+                operator: In
+                values: ["amd64"]
+      securityContext: { fsGroup: 1000 }
+      containers:
+      - name: server
+        image: ghcr.io/immich-app/immich-server:latest # {"$imagepolicy": "flux-system:immich"}
+        env:
+        - { name: UPLOAD_LOCATION, value: /usr/src/app/upload }
+        - name: DB_URL
+          valueFrom: { secretKeyRef: { name: immich-db-url, key: url } }
+        ports: [{ containerPort: 3001 }]
+        volumeMounts:
+        - { name: library, mountPath: /usr/src/app/upload }
+      volumes:
+      - name: library
+        persistentVolumeClaim: { claimName: immich-library }

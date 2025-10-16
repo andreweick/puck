@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: minio
+  namespace: work
+spec:
+  serviceName: minio
+  replicas: 1
+  selector: { matchLabels: { app: minio } }
+  template:
+    metadata: { labels: { app: minio } }
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/arch
+                operator: In
+                values: ["amd64"]
+      containers:
+      - name: minio
+        image: quay.io/minio/minio:latest # {"$imagepolicy": "flux-system:minio"}
+        args: ["server","/data","--console-address=:9001"]
+        envFrom: [{ secretRef: { name: minio-creds } }]
+        ports: [{ containerPort: 9000, name: s3 }, { containerPort: 9001, name: console }]
+        volumeMounts:
+        - { name: data, mountPath: /data }
+  volumeClaimTemplates: []

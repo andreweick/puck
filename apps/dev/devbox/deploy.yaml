@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: devbox
+  namespace: dev
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: devbox } }
+  template:
+    metadata: { labels: { app: devbox } }
+    spec:
+      nodeSelector: { hardware: raspi }
+      tolerations:
+      - { key: "dedicated", operator: "Equal", value: "raspi", effect: "NoSchedule" }
+      containers:
+      - name: openssh
+        image: lscr.io/linuxserver/openssh-server:latest
+        env:
+        - { name: PUBLIC_KEY, valueFrom: { secretKeyRef: { name: devbox-ssh, key: PUBLIC_KEY } } }
+        - { name: USER_NAME,  valueFrom: { secretKeyRef: { name: devbox-ssh, key: USER_NAME } } }
+        - { name: USER_PASSWORD, valueFrom: { secretKeyRef: { name: devbox-ssh, key: USER_PASSWORD } } }
+        - { name: SUDO_ACCESS, value: "true" }
+        - { name: TZ, value: "America/New_York" }
+        ports: [{ containerPort: 2222 }]
+      - name: tailscale
+        image: tailscale/tailscale:latest
+        env:
+        - name: TS_AUTHKEY
+          valueFrom: { secretKeyRef: { name: devbox-ts-auth, key: TS_AUTHKEY } }
+        - name: TS_HOSTNAME
+          value: devbox-pi
+        securityContext:
+          runAsUser: 0
+        command: ["/bin/sh","-lc"]
+        args: |
+          tailscaled --tun=userspace-networking --state=kube:secret:devbox-ts-state &
+          sleep 2
+          tailscale up --authkey=${TS_AUTHKEY} --hostname=${TS_HOSTNAME} --reset
+          tailscale serve tcp 22 127.0.0.1:2222
+          wait

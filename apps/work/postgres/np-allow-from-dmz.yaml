@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: app-pg-allow-from-dmz-immich
+  namespace: work
+spec:
+  podSelector:
+    matchLabels:
+      app: app-pg
+  policyTypes: ["Ingress"]
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: dmz
+      podSelector:
+        matchLabels:
+          app: immich-server
+    ports:
+    - protocol: TCP
+      port: 5432

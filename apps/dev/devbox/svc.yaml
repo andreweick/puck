@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: devbox-ssh
+  namespace: dev
+spec:
+  type: ClusterIP
+  selector: { app: devbox }
+  ports:
+  - { name: ssh, port: 22, targetPort: 2222 }

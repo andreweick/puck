@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: immich
+  namespace: dmz
+spec:
+  selector: { app: immich-server }
+  ports: [{ name: http, port: 8080, targetPort: 3001 }]
+  type: ClusterIP

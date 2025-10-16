@@ -1,0 +1,29 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "dependencyDashboard": true,
+  "labels": ["renovate", "dependencies"],
+  "timezone": "America/New_York",
+  "schedule": ["after 2am and before 6am on saturday"],
+  "rebaseWhen": "behind-base-branch",
+  "reviewersFromCodeOwners": true,
+  "enabledManagers": ["helm-values", "helmv3", "kustomize", "regex"],
+  "helm-values": { "fileMatch": ["(^|/)values\.ya?ml$"] },
+  "helmv3": { "fileMatch": ["(^|/)release\.ya?ml$"] },
+  "kustomize": { "fileMatch": ["(^|/)kustomization\.ya?ml$"] },
+  "regexManagers": [{
+    "fileMatch": ["(^|/)release\.ya?ml$"],
+    "matchStrings": ["chart:\s*\n\s*spec:\s*\n(?:.|\n)*?version:\s*\"?(?<currentValue>[0-9]+\.[0-9]+\.[0-9]+)\"?\s*\n"],
+    "depNameTemplate": "chart-version",
+    "datasourceTemplate": "helm",
+    "versioningTemplate": "semver"
+  }],
+  "packageRules": [
+    { "matchPackageNames": ["cilium"], "matchManagers": ["helmv3"], "groupName": "cilium" },
+    { "matchPackageNames": ["csi-driver-nfs"], "groupName": "nfs-csi" },
+    { "matchPackageNames": ["cloudnative-pg"], "groupName": "cnpg" },
+    { "matchPackageNames": ["local-path-provisioner"], "groupName": "local-path" },
+    { "matchPackageNames": ["longhorn"], "groupName": "longhorn" },
+    { "matchDatasources": ["docker"], "groupName": "app-images" }
+  ]
+}

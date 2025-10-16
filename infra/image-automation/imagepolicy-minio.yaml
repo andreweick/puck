@@ -1,0 +1,14 @@
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImagePolicy
+metadata:
+  name: minio
+  namespace: flux-system
+spec:
+  imageRepositoryRef:
+    name: minio
+  policy:
+    alphabetical:
+      order: desc
+  filterTags:
+    pattern: '^RELEASE\.(?P<ts>.*)$'
+    extract: '$ts'

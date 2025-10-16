@@ -1,0 +1,28 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta2
+kind: HelmRelease
+metadata:
+  name: postgresql
+  namespace: work
+spec:
+  interval: 10m
+  chart:
+    spec:
+      chart: postgresql
+      sourceRef:
+        kind: HelmRepository
+        name: bitnami
+        namespace: work
+      version: "18.0.15"
+  values:
+    image:
+      repository: docker.io/bitnami/postgresql
+      tag: "16.0.0" # {"$imagepolicy": "flux-system:postgresql"}
+    primary:
+      persistence:
+        enabled: true
+        storageClass: local-path
+        size: 100Gi
+    auth:
+      username: appuser
+      password: CHANGE_ME_STRONG   # SOPS: externalize if desired
+      database: appdb

@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: devbox-fedora
+  namespace: dev
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: devbox-fedora } }
+  template:
+    metadata: { labels: { app: devbox-fedora } }
+    spec:
+      nodeSelector: { hardware: raspi }
+      tolerations:
+      - { key: "dedicated", operator: "Equal", value: "raspi", effect: "NoSchedule" }
+      containers:
+      - name: devbox-fedora
+        image: ghcr.io/YOUR_GH_USER/puck-devbox-fedora:latest
+        ports: [{ containerPort: 22 }]
+        volumeMounts:
+        - { name: ssh, mountPath: /home/dev/.ssh }
+      - name: tailscale
+        image: tailscale/tailscale:latest
+        env:
+        - name: TS_AUTHKEY
+          valueFrom: { secretKeyRef: { name: devbox-fedora-ts-auth, key: TS_AUTHKEY } }
+        - name: TS_HOSTNAME
+          value: devbox-fedora
+        command: ["/bin/sh","-lc"]
+        args: |
+          tailscaled --tun=userspace-networking --state=kube:secret:devbox-fedora-ts-state &
+          sleep 2
+          tailscale up --authkey=${TS_AUTHKEY} --hostname=${TS_HOSTNAME} --reset
+          tailscale serve tcp 22 127.0.0.1:22
+          wait
+      volumes:
+      - name: ssh
+        secret:
+          secretName: devbox-fedora-ssh
+          items: [{ key: AUTHORIZED_KEYS, path: authorized_keys }]

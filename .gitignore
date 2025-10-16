@@ -1,0 +1,25 @@
+# OS / Editor
+.DS_Store
+Thumbs.db
+ehthumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.iml
+*.swp
+*.swo
+
+# Local secrets/keys (do NOT commit plaintext)
+age.key
+*.agekey
+**/secret.*.yaml
+
+# Build artifacts
+*.zip
+*.tar
+*.tar.gz
+
+# Kube client cache
+.kube/
+.kubecfg
+.env

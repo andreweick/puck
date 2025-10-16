@@ -1,0 +1,31 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: pgdump-nightly
+  namespace: work
+spec:
+  schedule: "30 2 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: pgdump
+            image: postgres:16
+            env:
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-pg-credentials
+                  key: password
+            command: ["/bin/bash","-lc"]
+            args: >
+              pg_dump -h app-pg-rw.work.svc.cluster.local -U appuser -d appdb
+              | gzip > /dumps/appdb-$(date +\%F).sql.gz &&
+              find /dumps -type f -mtime +14 -delete
+            volumeMounts:
+            - { name: dumps, mountPath: /dumps }
+          restartPolicy: OnFailure
+          volumes:
+          - name: dumps
+            persistentVolumeClaim: { claimName: pg-dumps }

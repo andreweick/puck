@@ -1,0 +1,13 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: immich-egress-allow-pg
+  namespace: dmz
+spec:
+  podSelector: { matchLabels: { app: immich-server } }
+  policyTypes: ["Egress"]
+  egress:
+  - to:
+    - namespaceSelector: { matchLabels: { kubernetes.io/metadata.name: work } }
+      podSelector: { matchLabels: { app: app-pg } }
+    ports: [{ protocol: TCP, port: 5432 }]

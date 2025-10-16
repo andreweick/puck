@@ -1,0 +1,9 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../namespaces/dmz-ns.yaml
+  - ../namespaces/work-ns.yaml
+  - ../namespaces/dev-ns.yaml
+  - default-deny-dmz.yaml
+  - default-deny-work.yaml
+  - default-deny-dev.yaml

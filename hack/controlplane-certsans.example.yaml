@@ -1,0 +1,8 @@
+cluster:
+  apiServer:
+    certSANs:
+      - 10.200.10.30
+      - puck-api.ts.net
+      - 100.100.100.100
+      # - 192.168.1.100  # kube-vip VIP (optional)
+      # - k8s.home.arpa  # DNS name (optional)

@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: caddy-gateway
+  namespace: ingress
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: caddy-gateway } }
+  template:
+    metadata: { labels: { app: caddy-gateway } }
+    spec:
+      containers:
+      - name: caddy
+        image: caddy:latest
+        args: ["run","--config","/etc/caddy/Caddyfile","--adapter","caddyfile"]
+        ports: [{ containerPort: 8080 }]
+        volumeMounts:
+        - { name: caddyfile, mountPath: /etc/caddy }
+      volumes:
+      - name: caddyfile
+        configMap:
+          name: caddyfile
+          items: [{ key: Caddyfile, path: Caddyfile }]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: caddy-gateway
+  namespace: ingress
+spec:
+  type: ClusterIP
+  selector: { app: caddy-gateway }
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080

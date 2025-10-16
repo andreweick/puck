@@ -1,0 +1,9 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: devbox-ssh-default-deny
+  namespace: dev
+spec:
+  podSelector: { matchLabels: { app: devbox } }
+  policyTypes: ["Ingress"]
+  ingress: []   # expose via tailscale "serve" or temporary port-forward

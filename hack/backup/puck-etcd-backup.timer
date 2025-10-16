@@ -1,0 +1,10 @@
+[Unit]
+Description=Run etcd snapshot nightly
+
+[Timer]
+OnCalendar=02:15
+Persistent=true
+RandomizedDelaySec=10m
+
+[Install]
+WantedBy=timers.target
