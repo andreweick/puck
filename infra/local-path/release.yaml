@@ -20,4 +20,4 @@ spec:
       reclaimPolicy: Delete
     nodePathMap:
     - node: DEFAULT_PATH_FOR_NON_LISTED_NODES
-      paths: ["/var/local-path-provisioner"]
+      paths: ["/var/mnt/data/local-path-provisioner"]  # Uses the 700GB data disk

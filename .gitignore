@@ -11,8 +11,14 @@ desktop.ini
 
 # Local secrets/keys (do NOT commit plaintext)
 age.key
+age-keys.txt
 *.agekey
 **/secret.*.yaml
+
+# Talos configuration (contains cluster credentials)
+talos-configs/
+.talos/
+*.talosconfig
 
 # Build artifacts
 *.zip

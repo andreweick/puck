@@ -1,8 +1,34 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - dmz/immich
-  - dmz/cloudflared
-  - work/postgres
-  - work/minio
-  - dev/devbox
+  # Uncomment these one at a time after core infrastructure is working
+  # Start with databases (postgres, minio), then apps (immich), then extras
+
+  # - work/postgres
+  #   PostgreSQL database cluster managed by CloudNativePG operator.
+  #   Used by Immich for storing photo metadata.
+  #   Includes automated backups via pgdump cron job.
+  #   Requires: cnpg operator enabled in infra/, secret.credentials.yaml
+
+  # - work/minio
+  #   S3-compatible object storage for storing files/media.
+  #   Used by Immich for storing actual photo/video files.
+  #   Requires: secret.creds.yaml (MinIO root user/password)
+
+  # - dmz/immich
+  #   Self-hosted photo and video management application (Google Photos alternative).
+  #   Stores metadata in PostgreSQL, files in MinIO.
+  #   Accessible via Caddy reverse proxy at photos.spouterinn.org.
+  #   Requires: postgres, minio, secret.db-url.yaml (database connection string)
+
+  # ENABLE THIS FIRST!
+  # - dmz/cloudflared
+  #   Cloudflare Tunnel daemon for secure external access without port forwarding.
+  #   Creates encrypted tunnel to Cloudflare edge, enabling external access to services.
+  #   Requires: secret.tunnel-token.yaml (Cloudflare tunnel token from dashboard)
+  #   Deploy this before other apps to enable external access with authentication
+
+  # - dev/devbox
+  #   Development/sandbox environment container with SSH access.
+  #   Useful for testing, debugging, or running one-off tasks in the cluster.
+  #   Requires: secret.ssh.yaml (SSH public keys), secret.tailscale.yaml (Tailscale auth key)

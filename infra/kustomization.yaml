@@ -10,5 +10,5 @@ resources:
   - tailscale-apiserver
   - cnpg
   - image-automation
-  - kube-vip
+  - kube-vip    # Provides LoadBalancer support for services
   # - longhorn    # Optional: enable if you adopt Longhorn later

@@ -5,14 +5,61 @@ metadata:
   namespace: ingress
 data:
   Caddyfile: |
+    # Caddy reverse proxy for Zero Trust access
+    # All requests come through Cloudflare Tunnel (except Jellyfin which is LAN-only)
+    # Cloudflare Access handles authentication before requests reach here
+
     :8080 {
-      handle_host photos.example.com {
-        reverse_proxy http://immich.dmz.svc.cluster.local:8080
+      # Future: Enable Authenticated Origin Pulls to prevent bypass
+      # tls {
+      #   client_auth {
+      #     mode require_and_verify
+      #     trusted_ca_cert_file /etc/caddy/cloudflare-ca.pem
+      #   }
+      # }
+
+      # Proxmox VE Management (gordie)
+      # Protected by Cloudflare Access with OAuth/OIDC SSO
+      handle_host gordie.spouterinn.org {
+        reverse_proxy https://10.200.10.40:8006 {
+          transport http {
+            tls_insecure_skip_verify
+          }
+        }
       }
-      handle_host nas.example.com {
-        reverse_proxy http://192.168.1.50:5000
+
+      # UPS Management Interface
+      # Protected by Cloudflare Access (email auth - front-door only, no OAuth support)
+      handle_host ups.spouterinn.org {
+        reverse_proxy https://10.200.10.41 {
+          transport http {
+            tls_insecure_skip_verify
+          }
+        }
       }
-      handle_host ups.example.com {
-        reverse_proxy http://192.168.1.60:80
+
+      # Synology NAS DSM (jackie2)
+      # Protected by Cloudflare Access with OAuth/OIDC SSO
+      handle_host jackie2.spouterinn.org {
+        reverse_proxy http://10.200.10.44:5000
       }
+
+      # Synology NAS DSM (pudge)
+      # Protected by Cloudflare Access with OAuth/OIDC SSO
+      handle_host pudge.spouterinn.org {
+        reverse_proxy http://10.200.10.45:5000
+      }
+
+      # Future: Immich photo management (uncomment when deployed)
+      # Protected by Cloudflare Access (OAuth recommended)
+      # handle_host photos.organmorgan.org {
+      #   reverse_proxy http://immich.dmz.svc.cluster.local:8080
+      # }
+
+      # Jellyfin media server (LOCAL ONLY - no Cloudflare Tunnel)
+      # Accessible only via internal DNS → kube-vip VIP (10.200.10.99)
+      # NOT routed through Cloudflare (violates ToS for video streaming)
+      # handle_host jellyfin.spouterinn.org {
+      #   reverse_proxy http://jellyfin.media.svc.cluster.local:8096
+      # }
     }

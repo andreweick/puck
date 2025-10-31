@@ -1,0 +1,7 @@
+creation_rules:
+  # Encrypt all secret.*.yaml files with your age key
+  - path_regex: secret\..*\.yaml$
+    age:
+      - age1sp7dt3sz5ynfyj834ehkx707zprkd8fnu6tdatyrwlrcrtykmeeqlv2hvd # CI/CD key
+      - age1hquxd29c04avyurq0ds4jw3j94rdt7j69awy4lehwtgg0rvyvucsddjewd # Personal key
+      - age1kac9y6l62scgv3qcyxmzuvsxg62724wagxx6uuh92yf5arnhzqyqyk7spg # Default SOPS key

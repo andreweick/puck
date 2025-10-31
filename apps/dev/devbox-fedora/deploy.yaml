@@ -9,9 +9,7 @@ spec:
   template:
     metadata: { labels: { app: devbox-fedora } }
     spec:
-      nodeSelector: { hardware: raspi }
-      tolerations:
-      - { key: "dedicated", operator: "Equal", value: "raspi", effect: "NoSchedule" }
+      # Runs on worker node (no special nodeSelector needed for single-worker setup)
       containers:
       - name: devbox-fedora
         image: ghcr.io/YOUR_GH_USER/puck-devbox-fedora:latest

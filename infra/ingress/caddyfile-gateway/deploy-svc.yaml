@@ -28,7 +28,7 @@ metadata:
   name: caddy-gateway
   namespace: ingress
 spec:
-  type: ClusterIP
+  type: LoadBalancer
   selector: { app: caddy-gateway }
   ports:
     - name: http

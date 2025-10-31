@@ -59,11 +59,13 @@ spec:
             add: ["NET_ADMIN","NET_RAW"]
         env:
         - name: address
-          value: "192.168.1.100"   # EDIT: your desired API VIP
+          value: "10.200.10.99"    # VIP for LoadBalancer services
         - name: vip_interface
-          value: "eth0"            # EDIT: interface name on CP VMs
+          value: "eth0"            # Interface name (check with: ip addr show)
         - name: lb_enable
-          value: "false"
+          value: "true"            # Enable LoadBalancer support
+        - name: lb_range
+          value: "10.200.10.99-10.200.10.110"  # Range for LoadBalancer IPs
         - name: enableARP
           value: "true"
         - name: leaderElection

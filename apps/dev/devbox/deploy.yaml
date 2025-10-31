@@ -9,9 +9,7 @@ spec:
   template:
     metadata: { labels: { app: devbox } }
     spec:
-      nodeSelector: { hardware: raspi }
-      tolerations:
-      - { key: "dedicated", operator: "Equal", value: "raspi", effect: "NoSchedule" }
+      # Runs on worker node (no special nodeSelector needed for single-worker setup)
       containers:
       - name: openssh
         image: lscr.io/linuxserver/openssh-server:latest
